@@ -1,0 +1,27 @@
+{
+  "name": "capture360-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "worker": "node src/worker.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/rate-limit": "^10.1.0",
+    "@fastify/static": "^8.2.0",
+    "bullmq": "^5.16.0",
+    "fastify": "^5.0.0",
+    "ioredis": "^5.4.1",
+    "mime-types": "^2.1.35",
+    "probe-image-size": "^7.2.3",
+    "uuid": "^11.0.3",
+    "yauzl": "^3.2.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

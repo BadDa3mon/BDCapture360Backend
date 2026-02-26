@@ -1,0 +1,43 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    command: npm start
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      REDIS_URL: redis://redis:6379
+      PUBLIC_BASE_URL: http://localhost:3000
+      MAX_UPLOAD_BYTES: 2147483648
+      MAX_UNZIPPED_BYTES: 4294967296
+      MAX_JOB_MS: 600000
+      MAX_CONCURRENT_JOBS: 2
+      ENABLE_PREVIEW: "true"
+    depends_on:
+      - redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./storage:/app/storage
+      - ./temp:/app/temp
+
+  worker:
+    build: .
+    command: npm run worker
+    environment:
+      REDIS_URL: redis://redis:6379
+      PUBLIC_BASE_URL: http://localhost:3000
+      MAX_UPLOAD_BYTES: 2147483648
+      MAX_UNZIPPED_BYTES: 4294967296
+      MAX_JOB_MS: 600000
+      MAX_CONCURRENT_JOBS: 2
+      ENABLE_PREVIEW: "true"
+    depends_on:
+      - redis
+    volumes:
+      - ./storage:/app/storage
+      - ./temp:/app/temp
