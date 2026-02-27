@@ -65,8 +65,8 @@ export const config = {
   outputWidth: toInt(process.env.OUTPUT_WIDTH, 6000),
   outputHeight: toInt(process.env.OUTPUT_HEIGHT, 3000),
   huginStepTimeoutMs: toInt(process.env.HUGIN_STEP_TIMEOUT_MS, 15 * 60 * 1000),
-  huginBinPaths: (process.env.HUGIN_BIN_PATHS || defaultHuginBins.join(':'))
-    .split(':')
+  huginBinPaths: (process.env.HUGIN_BIN_PATHS || defaultHuginBins.join(path.delimiter))
+    .split(path.delimiter)
     .map((item) => item.trim())
     .filter(Boolean)
 };

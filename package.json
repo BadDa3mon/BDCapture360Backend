@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
-    "worker": "node src/worker.js"
+    "dev": "nodemon --exec \"node --env-file=.env\" src/server.js",
+    "start": "node --env-file=.env src/server.js",
+    "worker": "node --env-file=.env src/worker.js"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",

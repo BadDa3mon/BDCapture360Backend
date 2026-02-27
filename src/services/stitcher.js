@@ -4,9 +4,10 @@ import { spawn } from 'node:child_process';
 import probe from 'probe-image-size';
 import { config } from '../config.js';
 
-const extraPath = config.huginBinPaths.join(':');
+const isWindows = process.platform === 'win32';
+const extraPath = config.huginBinPaths.join(path.delimiter);
 const processPath = process.env.PATH || '';
-const mergedPath = extraPath ? `${extraPath}:${processPath}` : processPath;
+const mergedPath = extraPath ? `${extraPath}${path.delimiter}${processPath}` : processPath;
 
 function normalizeFileRef(file) {
   return String(file || '').replace(/^\.\//, '').replace(/^images\//, '');
@@ -90,11 +91,19 @@ function execCmd(cmd, args, options = {}) {
 }
 
 async function execShell(command, cwd, options = {}) {
+  if (isWindows) {
+    await execCmd('cmd.exe', ['/d', '/s', '/c', command], { ...options, cwd });
+    return;
+  }
   await execCmd('sh', ['-c', command], { ...options, cwd });
 }
 
 async function hasCommand(cmd) {
   try {
+    if (isWindows) {
+      await execCmd('where', [cmd], { timeoutMs: 5000 });
+      return true;
+    }
     await execCmd('sh', ['-c', `command -v ${cmd}`], { timeoutMs: 5000 });
     return true;
   } catch {
@@ -192,7 +201,7 @@ async function huginStitch(workDir, selectedImages, onLog) {
     throw new Error('Hugin did not produce remap TIFF files');
   }
 
-  await execCmd('enblend', ['-o', path.join(outputDir, 'result.jpg'), ...remapInputs], {
+  await execCmd('enblend', ['-f', `${config.outputWidth}x${config.outputHeight}+0+0`, '-o', path.join(outputDir, 'result.jpg'), ...remapInputs], {
     stepName: 'enblend',
     onLog,
     timeoutMs: config.huginStepTimeoutMs
